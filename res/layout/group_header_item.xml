@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="40dp"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp" >
+
+    <TextView
+        android:id="@+id/groupTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="Group Header"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/btnCreateNewTask"
+        android:layout_width="29dp"
+        android:layout_height="29dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/ic_action_new"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
+
+</RelativeLayout>

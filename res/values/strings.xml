@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Todo</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="txtId">●ID</string>
+    <string name="txtPassword">●パスワード</string>
+    <string name="txtPasswordReminder">→パスワードを忘れた方はこちら</string>
+    <string name="mesError">入力された内容に誤りがあります。</string>
+    <string name="txtEmailAddress">●メールアドレス</string>
+    <string name="txtNickName">●ニックネーム</string>
+    <string name="mesDecsUseID">※登録後に変更できません。</string>
+    <string name="mesDecsNickName">※登録後に変更できません。</string>
+    <string name="btnLogin">ログイン</string>
+    <string name="btnSignUp">新規登録</string>
+    <string name="btnSend">送信</string>
+    <string name="btnOk">OK</string>
+    <string name="account">アカウント</string>
+    <string name="facebook_app_id"></string>
+    <string name="title_facebook_login">Facebook login</string>
+    <string name="twitter_consumer_key"></string>
+    <string name="twitter_consumer_secret"></string>
+    <string name="title_activity_add_task">AddTaskActivity</string>
+    <string name="title_activity_edit_task">EditTaskActivity</string>
+    <string name="title_activity_daily_list">DailyList</string>
+
+</resources>

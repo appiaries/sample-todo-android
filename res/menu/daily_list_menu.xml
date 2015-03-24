@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.appiaries.puzzle.PlayActivity" >
+
+    <item
+        android:id="@+id/createTask"      
+        android:icon="@+drawable/ic_action_new"
+        android:showAsAction="always"/>
+    <item
+        android:id="@+id/settings"      
+        android:icon="@+drawable/settings_icon"
+        android:showAsAction="always"/>
+
+</menu>

@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/LayoutVerticalStyle"
+    android:layout_gravity="end" >
+
+    <LinearLayout
+        style="@style/LayoutVerticalStyle"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" >
+
+        <TextView
+            android:id="@+id/validation"
+            style="@style/ErrorLableStyle"
+            android:layout_marginTop="10dp"
+            android:text="@string/mesError"
+            android:visibility="gone" />
+
+        <TextView
+            style="@style/SettingLableStyle"
+            android:text="@string/txtId"
+            android:textSize="8pt" />
+
+        <EditText
+            android:id="@+id/txtIdLogin"
+            style="@style/HomeTxtDescStyle"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="start|center_horizontal"
+            android:background="@drawable/edit_text_border_style"
+            android:maxLength="20"
+            android:paddingLeft="5dp" />
+
+        <TextView
+            style="@style/SettingLableStyle"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/txtPassword"
+            android:textSize="8pt" />
+
+        <EditText
+            android:id="@+id/txtPasswordLogin"
+            style="@style/HomeTxtDescStyle"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="start|center_horizontal"
+            android:background="@drawable/edit_text_border_style"
+            android:inputType="textPassword"
+            android:maxLength="20"
+            android:paddingLeft="5dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnLogin"
+        style="@style/ButtonStyle"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/my_button"
+        android:text="@string/btnLogin" />
+
+    <LinearLayout
+        style="@style/LayoutVerticalStyle"
+        android:gravity="center_horizontal" >
+    </LinearLayout>
+
+</LinearLayout>

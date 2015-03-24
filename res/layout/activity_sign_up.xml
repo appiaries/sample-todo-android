@@ -1,0 +1,81 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/LayoutVerticalStyle"
+    android:layout_width="match_parent"
+    android:layout_gravity="right" >
+
+    <LinearLayout
+        style="@style/LayoutVerticalStyle"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/validation"
+            style="@style/ErrorLableStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone" />
+
+        <TextView
+            style="@style/SettingLableStyle"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="0dp"
+            android:text="@string/txtId" />
+
+        <TextView
+            style="@style/SettingLableStyle"
+            android:layout_marginBottom="10dp"
+            android:text="@string/mesDecsUseID" />
+
+        <EditText
+            android:id="@+id/txtIdAccount"
+            style="@style/HomeTxtDescStyle"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/edit_text_border_style"
+            android:paddingLeft="5dp" />
+
+        <TextView
+            style="@style/SettingLableStyle"
+            android:layout_margin="10dp"
+            android:text="@string/txtPassword" />
+
+        <EditText
+            android:id="@+id/txtPassword"
+            style="@style/HomeTxtDescStyle"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/edit_text_border_style"            
+            android:paddingLeft="5dp" />
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/SettingLableStyle"
+        android:text="@string/txtEmailAddress" />
+
+    <EditText
+        android:id="@+id/txtEmailAddress"
+        style="@style/HomeTxtDescStyle"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_weight="1"
+        android:background="@drawable/edit_text_border_style"
+        android:ems="10"
+        android:paddingLeft="5dp" >
+
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        style="@style/LayoutVerticalStyle"
+        android:gravity="center_horizontal" >
+
+        <Button
+            android:id="@+id/btnOk"
+            style="@style/ButtonStyle"            
+            android:background="@drawable/my_button"
+            android:text="@string/btnOk" />
+    </LinearLayout>
+
+</LinearLayout>

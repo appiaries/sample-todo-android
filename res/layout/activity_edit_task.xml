@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <TextView
+            android:id="@+id/tvDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Wed. November 26, 2014 8:34PM"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <EditText
+            android:id="@+id/txtTaskTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/noneborder"
+            android:ems="10"
+            android:hint="タスクを入力"
+            android:paddingLeft="5dp" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/btnChooseDate"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@+id/txtTaskTitle"
+            android:background="@drawable/ic_action_time" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/txtMemo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/noneborder"
+        android:ems="10"
+        android:gravity="top"
+        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:inputType="textMultiLine"
+        android:focusable="false" 
+        android:focusableInTouchMode="false"
+        android:hint="メモを入力"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"  
+        android:layout_marginTop="20dp"
+        android:background="#EE3B3B"
+        android:textColor="#ffffff"      
+        android:text="保存" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="#D3D3D3"        
+        android:text="キャンセル" />
+    
+
+</LinearLayout>

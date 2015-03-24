@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ee0000"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"         
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="25dp"
+        android:focusable="false"
+        android:background="#FFFFFF"
+        android:focusableInTouchMode="false"  
+        android:paddingRight="10dp" >
+
+        <TextView
+            android:id="@+id/taskTitle"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:layout_marginTop="5dp"           
+            android:focusableInTouchMode="false"  
+            android:textSize="14sp"
+            android:ellipsize="end"          
+            android:maxLines="1"
+            android:text="" />
+
+        <Button
+            android:id="@+id/btnDeleteTask"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:focusable="false"
+            android:visibility="invisible"
+            android:focusableInTouchMode="false"  
+            android:layout_alignParentRight="true"           
+            android:background="@drawable/ic_action_remove" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:gravity="center_horizontal"
+        android:background="#FFFFFF"
+        android:visibility="visible" >
+
+        <Button
+            android:id="@+id/btnFinished"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_action_accept"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="" />
+
+        <Button
+            android:id="@+id/btnImportant"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_action_warning"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_action_remove"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="" />
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_action_edit"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="" />
+    </LinearLayout>
+
+</LinearLayout>
