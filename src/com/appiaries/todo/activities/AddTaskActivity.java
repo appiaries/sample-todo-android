@@ -1,168 +1,170 @@
+//
+// Copyright (c) 2014 Appiaries Corporation. All rights reserved.
+//
 package com.appiaries.todo.activities;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Locale;
 
+import com.appiaries.baas.sdk.ABException;
+import com.appiaries.baas.sdk.ABResult;
+import com.appiaries.baas.sdk.ABStatus;
+import com.appiaries.baas.sdk.ResultCallback;
 import com.appiaries.todo.R;
 import com.appiaries.todo.activities.DateTimePickerDialog.DateTimePickerListener;
-import com.appiaries.todo.common.APIHelper;
-import com.appiaries.todo.common.TextHelper;
-import com.appiaries.todo.managers.TaskManager;
+import com.appiaries.todo.common.Constants;
+import com.appiaries.todo.common.PreferenceHelper;
+import com.appiaries.todo.models.Task;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class AddTaskActivity extends BaseActivity {
 
-	String screenTag = "AddTaskActivity";
-	private Date selectedDate;
-	ProgressDialog progressBar;
+	private Date mSelectedDate;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_add_task);
 
-		// Get Category Date from DailyList
-		Intent myIntent = getIntent();
-		long categoryDateInMillis = myIntent.getExtras()
-				.getLong("categoryDate");
-
-		// Set category Date as selectedDate
-		Date categoryDate = TextHelper.getDate(categoryDateInMillis);
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(categoryDate);
-
-		Calendar calNew = Calendar.getInstance();
-		calNew.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-				cal.get(Calendar.DAY_OF_MONTH));
-
-		selectedDate = calNew.getTime();
-
-		final TextView tvDateTime = (TextView) findViewById(R.id.tvDateTime);
-		final TextView txtTitle = (TextView) findViewById(R.id.txtTaskTitle);
-		final TextView txtMemo = (TextView) findViewById(R.id.txtMemo);
-
-		Button btnChooseDate = (Button) findViewById(R.id.btnChooseDate);
-		Button btnSave = (Button) findViewById(R.id.btnSave);
-		Button btnCancel = (Button) findViewById(R.id.btnCancel);
-
-		tvDateTime.setText(TextHelper.getFormatedDateString(selectedDate));
-
-		btnSave.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				HashMap<String, Object> data = new HashMap<String, Object>();
-
-				if (selectedDate != null) {
-					data.put("scheduled_at", selectedDate.getTime());
-				} else {
-					Calendar c = Calendar.getInstance();
-					data.put("scheduled_at", c.getTimeInMillis());
-				}
-
-				if (txtTitle.getText() != null
-						&& !TextUtils.isEmpty(txtTitle.getText())) {
-					data.put("title", txtTitle.getText().toString());
-				}
-
-				if (txtMemo != null && !TextUtils.isEmpty(txtMemo.getText())) {
-					data.put("body", txtMemo.getText().toString());
-				}
-
-				data.put("category_id", "");
-
-				if (APIHelper.getUserId(getApplicationContext()) != null) {
-					data.put("user_Id",
-							APIHelper.getUserId(getApplicationContext()));
-					data.put("type", 0);
-					data.put("status", 0);
-				}
-
-				new createTaskAsyncTask().execute(data);
-			}
-		});
-
-		btnChooseDate.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// Show DateTime Picker dialog
-				final DateTimePickerDialog dialog = new DateTimePickerDialog(
-						AddTaskActivity.this);
-				dialog.setDateTimePickerListener(new DateTimePickerListener() {
-
-					@Override
-					public void onSet(Date date) {
-						selectedDate = date;
-						tvDateTime.setText(TextHelper
-								.getFormatedDateString(date));
-					}
-
-					@Override
-					public void onCancel() {
-
-					}
-				});
-
-				dialog.show();
-			}
-		});
-
-		btnCancel.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
+        setupView();
 	}
 
-	private class createTaskAsyncTask extends
-			AsyncTask<HashMap<String, Object>, Void, Integer> {
+    private void setupView() {
+        setContentView(R.layout.activity_add_task);
 
-		@Override
-		protected Integer doInBackground(HashMap<String, Object>... params) {
-			try {
-				return TaskManager.getInstance().createTask(params[0]);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
+        // Set date as mSelectedDate
+        Calendar calSectionDate = Calendar.getInstance(Locale.ENGLISH); //FIXME:
+        long msec = getIntent().getExtras().getLong(Constants.EXTRA_KEY_DATE);
+        calSectionDate.setTimeInMillis(msec);
+        Date date = calSectionDate.getTime();
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			progressBar = new ProgressDialog(AddTaskActivity.this);
-			progressBar.setMessage("Loading....");
-			progressBar.setCancelable(false);
-			progressBar.setCanceledOnTouchOutside(false);
-			progressBar.show();
-		}
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
 
-		@Override
-		protected void onPostExecute(Integer result) {
-			progressBar.dismiss();
-			super.onPostExecute(result);
-			if (result == 201) {
-				Log.d(screenTag, "create successful");
-				Intent resultIntent = new Intent();
-				setResult(1, resultIntent);
-				finish();
-			} else {
-				Log.d(screenTag, "create fail");
-			}
-		}
+        Calendar calNew = Calendar.getInstance();
+        calNew.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
-	}
+        mSelectedDate = calNew.getTime();
+
+        final TextView textDatetime = (TextView) findViewById(R.id.text_datetime);
+        final EditText editTitle    = (EditText) findViewById(R.id.edit_task_title);
+        final EditText editMemo     = (EditText) findViewById(R.id.edit_memo);
+        Button datetimeButton       = (Button)   findViewById(R.id.button_datetime);
+        Button saveButton           = (Button)   findViewById(R.id.button_save);
+        Button cancelButton         = (Button)   findViewById(R.id.button_cancel);
+
+        textDatetime.setText(new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT, Locale.getDefault()).format(mSelectedDate));
+
+        // Save Button
+        saveButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // hide software keyboard if needed
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (editTitle.hasFocus()) {
+                    imm.hideSoftInputFromWindow(editTitle.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                } else if (editMemo.hasFocus()) {
+                    imm.hideSoftInputFromWindow(editMemo.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                }
+
+                // move focus
+                LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+                layout.setFocusableInTouchMode(true);
+                layout.requestFocus();
+                layout.setFocusableInTouchMode(false);
+
+
+                String title = editTitle.getText() != null ? editTitle.getText().toString() : null;
+                String memo  = editMemo.getText()  != null ? editMemo.getText().toString()  : null;
+                Date scheduleAt = mSelectedDate != null ? mSelectedDate : new Date();
+
+                if (TextUtils.isEmpty(title)) {
+                    createAndShowConfirmationDialog(
+                            R.string.add_task__save_confirm_title,
+                            R.string.add_task__save_confirm_message,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    /* NOP */
+                                }
+                            });
+                    return;
+                }
+
+                Task task = new Task();
+                task.setTitle(title);
+                task.setBody(memo);
+                task.setScheduleAt(scheduleAt);
+                task.setStatus(Task.Status.NEW.ordinal());
+                task.setType(Task.Type.NORMAL.ordinal());
+                task.setUserId(PreferenceHelper.loadUserId(getApplicationContext()));
+
+                final ProgressDialog progress = createAndShowProgressDialog(R.string.progress__creating);
+                task.save(new ResultCallback() {
+                    @Override
+                    public void done(ABResult result, ABException e) {
+                        progress.dismiss();
+                        if (e == null) {
+                            int code = result.getCode();
+                            if (code == ABStatus.CREATED && result.getData() != null) {
+                                showMessage(AddTaskActivity.this, R.string.message_success__created);
+                                Intent intent = new Intent();
+                                setResult(TaskListActivity.RESULT_CODE_SUCCESS, intent);
+                                finish();
+                            } else {
+                                showUnexpectedStatusCodeError(AddTaskActivity.this, code);
+                            }
+                        } else {
+                            showError(AddTaskActivity.this, e);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Select Datetime Button
+        datetimeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show DateTime Picker dialog
+                final DateTimePickerDialog dialog = new DateTimePickerDialog(AddTaskActivity.this);
+                dialog.setDateTimePickerListener(new DateTimePickerListener() {
+                    @Override
+                    public void onSet(Date date) {
+                        mSelectedDate = date;
+                        textDatetime.setText(new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT, Locale.getDefault()).format(date));
+                    }
+                    @Override
+                    public void onCancel() {
+                        /* NOP */
+                    }
+                });
+                dialog.show();
+            }
+        });
+
+        // Cancel Button
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
 }

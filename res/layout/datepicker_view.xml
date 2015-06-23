@@ -8,24 +8,21 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="9.5"        
-        android:orientation="vertical" >
-
+        android:orientation="vertical">
         <DatePicker
-            android:id="@+id/datePicker"
+            android:id="@+id/picker_date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"                          
             android:calendarViewShown="false" />
-
         <TimePicker
-            android:id="@+id/timePicker"
+            android:id="@+id/picker_time"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"                    
-            />
+            android:layout_gravity="center" />
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
@@ -35,20 +32,17 @@
         android:paddingBottom="5dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="5dp" >
-
+        android:paddingTop="5dp">
         <Button
-            android:id="@+id/btnSet"
+            android:id="@+id/button_cancel"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:text="Set" />
-
+            android:text="@string/datetime_picker__cancel_button" />
         <Button
-            android:id="@+id/btnCancel"
+            android:id="@+id/button_select"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/btnSet"
-            android:text="Cancel" />
-    </RelativeLayout>
+            android:text="@string/datetime_picker__select_button" />
+    </LinearLayout>
 
 </LinearLayout>

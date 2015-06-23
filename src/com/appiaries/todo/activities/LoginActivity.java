@@ -1,188 +1,140 @@
+//
+// Copyright (c) 2014 Appiaries Corporation. All rights reserved.
+//
 package com.appiaries.todo.activities;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
-import com.appiaries.APISResult;
+import com.appiaries.baas.sdk.AB;
+import com.appiaries.baas.sdk.ABException;
+import com.appiaries.baas.sdk.ABResult;
+import com.appiaries.baas.sdk.ABStatus;
+import com.appiaries.baas.sdk.ResultCallback;
 import com.appiaries.todo.R;
-import com.appiaries.todo.common.APIHelper;
-import com.appiaries.todo.managers.UserManager;
+import com.appiaries.todo.common.Constants;
+import com.appiaries.todo.common.PreferenceHelper;
+import com.appiaries.todo.common.Validator;
+import com.appiaries.todo.models.User;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
 
-@SuppressWarnings("unchecked")
 public class LoginActivity extends BaseActivity {
-	PlanetHolder planetHolder;
-	ProgressDialog progressBar;
-	String loginId;
-	String password;
 
-	@Override
+    private static class ViewHolder {
+        public TextView errorMessages;
+        public EditText loginId;
+        public EditText password;
+        public Button loginButton;
+    }
+
+    ViewHolder mViewHolder;
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_login);
-		CreateView();
+
+		setupView();
 	}
 
-	private void CreateView() {
+    private void setupView() {
+        setContentView(R.layout.activity_login);
 
-		planetHolder = new PlanetHolder();
+		mViewHolder = new ViewHolder();
+		mViewHolder.errorMessages = (TextView) findViewById(R.id.text_error_messages);
+		mViewHolder.loginId       = (EditText) findViewById(R.id.edit_login_id);
+		mViewHolder.password      = (EditText) findViewById(R.id.edit_password);
+		mViewHolder.loginButton   = (Button)   findViewById(R.id.button_login);
+		mViewHolder.loginButton.setOnClickListener(new OnClickListener() {
 
-		EditText txtId = (EditText) findViewById(R.id.txtIdLogin);
-		EditText txtPassword = (EditText) findViewById(R.id.txtPasswordLogin);
-		TextView txtValidation = (TextView) findViewById(R.id.validation);
+            @Override
+            public void onClick(View arg0) {
+                if (validate(mViewHolder)) {
+                    String loginId = mViewHolder.loginId.getText().toString();
+                    String password = mViewHolder.password.getText().toString();
 
-		Button btnLogin = (Button) findViewById(R.id.btnLogin);
+                    User user = new User();
+                    user.setLoginId(loginId);
+                    user.setPassword(password);
 
-		planetHolder.txtValidation = txtValidation;
-		planetHolder.txtId = txtId;
-		planetHolder.txtPassword = txtPassword;
-		planetHolder.btnLogin = btnLogin;
+                    final ProgressDialog progress = createAndShowProgressDialog(R.string.progress__processing);
+                    user.logIn(new ResultCallback<User>() {
+                        @Override
+                        public void done(ABResult<User> result, ABException e) {
+                            progress.dismiss();
+                            if (e == null) {
+                                int code = result.getCode();
+                                if (code == ABStatus.CREATED) {
+                                    Context context = getApplicationContext();
+                                    PreferenceHelper.saveUserId(context, AB.Session.getUser().getID()); //FIXME: auto-login にしていれば不要なはず
+                                    PreferenceHelper.saveToken(context, AB.Session.getToken()); //FIXME: auto-login にしていれば不要なはず
+                                    //PreferenceHelper.saveString(ctx, PreferenceHelper.PREF_KEY_USER_PASSWORD, password);
 
-		planetHolder.btnLogin.setOnClickListener(new OnClickListener() {
+                                    Intent intent = new Intent(getBaseContext(), TaskListActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    showUnexpectedStatusCodeError(LoginActivity.this, code);
+                                }
+                            } else {
+                                mViewHolder.errorMessages.setVisibility(View.VISIBLE);
+                                if (e.getCode() == ABStatus.UNPROCESSABLE_ENTITY) {
+                                    mViewHolder.errorMessages.setText(R.string.message_error__authentication_failure);
+                                } else {
+                                    mViewHolder.errorMessages.setText(R.string.message_error__wrong_input);
+                                }
+                                showError(LoginActivity.this, e);
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
-			@Override
-			public void onClick(View arg0) {
-				if (validationFrom(planetHolder)) {
-					String loginId = planetHolder.txtId.getText().toString();
-					String password = planetHolder.txtPassword.getText()
-							.toString();
-					HashMap<String, String> data = new HashMap<String, String>();
-					data.put("loginId", loginId);
-					data.put("password", password);
-
-					new DoLoginAsynTask().execute(data);
-
-				} else {
-					planetHolder.txtValidation.setVisibility(View.VISIBLE);
-				}
-			}
-		});
+        // for Debug
+        mViewHolder.loginId.setText(R.string.login__default_login_id);
+        mViewHolder.password.setText(R.string.login__default_password);
 	}
 
-	/**
-	 * 
-	 * @param planetHolder
-	 * @return
-	 */
-	private boolean validationFrom(final PlanetHolder planetHolder) {
-		boolean flg = true;
-		final String txtId = planetHolder.txtId.getText().toString();
-		if (!isValidPassword(txtId) || txtId.trim().length() < 3) {
-			planetHolder.txtId
-					.setBackgroundResource(R.drawable.focus_border_style);
-			flg = false;
+	private boolean validate(final ViewHolder viewHolder) {
+		boolean isValid = true;
+		final String loginId = viewHolder.loginId.getText().toString();
+		if (TextUtils.isEmpty(loginId) || loginId.trim().length() < Constants.ID_MIN_LENGTH || loginId.trim().length() > Constants.ID_MAX_LENGTH) {
+			viewHolder.loginId.setBackgroundResource(R.drawable.focus_border_style);
+			isValid = false;
 		} else {
-			planetHolder.txtId
-					.setBackgroundResource(R.drawable.edit_text_border_style);
+			viewHolder.loginId.setBackgroundResource(R.drawable.edit_text_border_style);
 		}
 
-		final String pass = planetHolder.txtPassword.getText().toString();
-		if (!isValidPassword(pass) || pass.trim().length() < 6) {
-			planetHolder.txtPassword
-					.setBackgroundResource(R.drawable.focus_border_style);
-			flg = false;
+		final String password = viewHolder.password.getText().toString();
+		if (!isValidPassword(password)) {
+			viewHolder.password.setBackgroundResource(R.drawable.focus_border_style);
+			isValid = false;
 		} else {
-			planetHolder.txtPassword
-					.setBackgroundResource(R.drawable.edit_text_border_style);
+			viewHolder.password.setBackgroundResource(R.drawable.edit_text_border_style);
 		}
-		return flg;
+		return isValid;
 	}
 
-	/**
-	 * validating password and user id not null
-	 * 
-	 * @param val
-	 * @return false with val null else true
-	 */
 	private boolean isValidPassword(String val) {
-		if (val != null && val.trim().length() > 0) {
-			return true;
+		boolean isValid = false;
+        if (!Validator.isNotEmpty(val)) {
+			mViewHolder.errorMessages.setVisibility(View.VISIBLE);
+			mViewHolder.errorMessages.setText(R.string.message_error__wrong_input);
+		} else if (!Validator.isValidPassword(val)) {
+			mViewHolder.errorMessages.setVisibility(View.VISIBLE);
+			mViewHolder.errorMessages.setText(R.string.message_error__invalid_password);
+		} else {
+			isValid = true;
 		}
-		return false;
-	}
-
-	/* *********************************
-	 * We use the holder pattern It makes the view faster and avoid finding the
-	 * component *********************************
-	 */
-	private static class PlanetHolder {
-
-		public TextView txtValidation;
-		public EditText txtId;
-		public EditText txtPassword;
-		public Button btnLogin;
-	}
-
-	private class DoLoginAsynTask extends
-			AsyncTask<HashMap<String, String>, Void, APISResult> {
-
-		@Override
-		protected APISResult doInBackground(HashMap<String, String>... params) {
-			HashMap<String, String> data = params[0];
-			loginId = data.get("loginId");
-			password = data.get("password");
-
-			try {
-
-				return UserManager.getInstance().doLogin(loginId, password,
-						true,getApplicationContext());
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(APISResult responseObj) {
-			
-			progressBar.dismiss();
-			if (responseObj !=null && responseObj.getResponseCode() == 201) {
-				
-				Map<?, ?> userObj = responseObj.getResponseData();
-				
-				String userId = (String) userObj
-						.get("_id");				
-				String userToken = (String) userObj
-						.get("_token");
-				
-				APIHelper.setUserID(getApplicationContext(), userId);
-				APIHelper.setUserToken(getApplicationContext(), userToken);
-				//APIHelper.setStringToLocalStorage(getApplicationContext(), Constants.USER_PASSWORD ,password);
-				
-				Intent myIntent = new Intent(getBaseContext(),
-						DailyListActivity.class);
-				myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-				
-				startActivity(myIntent);
-				finish();
-			} else {
-
-				planetHolder.txtValidation.setVisibility(View.VISIBLE);
-
-			}
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			progressBar = new ProgressDialog(LoginActivity.this);
-			progressBar.setMessage("Loading....");
-			progressBar.setCancelable(false);
-			progressBar.setCanceledOnTouchOutside(false);
-			progressBar.show();
-		}
+		return isValid;
 	}
 
 }

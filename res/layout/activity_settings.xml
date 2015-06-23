@@ -7,7 +7,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.appiaries.melissashop.activities.SettingActivity"
+        tools:context="com.appiaries.todo.activities.SettingActivity"
         tools:ignore="MergeRootFrame" >
 
         <TableLayout
@@ -16,20 +16,20 @@
             android:gravity="center_horizontal" >
 
             <TableRow
-                android:id="@+id/tableRow"
+                android:id="@+id/table_row"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/todo_cell_shape_bottom" >
 
                 <TextView
-                    android:id="@+id/account"
+                    android:id="@+id/text_account"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="70"
                     android:background="#FFFFFF"
                     android:gravity="left"
                     android:padding="18dp"
-                    android:text="@string/account"
+                    android:text="@string/settings__account"
                     android:textColor="#000000"
                     android:textSize="20sp" />
 

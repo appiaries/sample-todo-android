@@ -7,22 +7,21 @@
     <requestFocus />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/text_error_messages"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="予期せぬエラーが発生しました。
-しばらく経ってから再度アクセスしてください。"
+        android:text="@string/message_error__unexpected_error"
         android:textColor="#ff0000" />
 
     <Button
-        android:id="@+id/btnError"
+        android:id="@+id/button_abort"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="100dp"
         android:textColor="#ffffff"
-        android:text="アプリを終了する"
+        android:text="@string/error__abort_button"
         android:background="@drawable/red_button" />
 
 </LinearLayout>

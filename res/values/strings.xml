@@ -1,28 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Appiaries -->
+    <string name="appiaries__datastore_id">appiaries_sample</string>
+    <string name="appiaries__application_id">todo</string>
+    <string name="appiaries__application_token">app224c1e94977426cc4184be3e5e</string>
+    <!-- Facebook -->
+    <string name="facebook__title">Facebook login</string>
+    <string name="facebook__app_id">(Facebook API Key)</string>
+    <!-- Twitter -->
+    <string name="twitter__consumer_key">(Twitter Consumer Key)</string>
+    <string name="twitter__consumer_secret">(Twitter Consumer Secret)</string>
+
+    <!-- Common (App Global) -->
     <string name="app_name">Todo</string>
-    <string name="title_activity_splash">SplashActivity</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="txtId">●ID</string>
-    <string name="txtPassword">●パスワード</string>
-    <string name="txtPasswordReminder">→パスワードを忘れた方はこちら</string>
-    <string name="mesError">入力された内容に誤りがあります。</string>
-    <string name="txtEmailAddress">●メールアドレス</string>
-    <string name="txtNickName">●ニックネーム</string>
-    <string name="mesDecsUseID">※登録後に変更できません。</string>
-    <string name="mesDecsNickName">※登録後に変更できません。</string>
-    <string name="btnLogin">ログイン</string>
-    <string name="btnSignUp">新規登録</string>
-    <string name="btnSend">送信</string>
-    <string name="btnOk">OK</string>
-    <string name="account">アカウント</string>
-    <string name="facebook_app_id"></string>
-    <string name="title_facebook_login">Facebook login</string>
-    <string name="twitter_consumer_key"></string>
-    <string name="twitter_consumer_secret"></string>
-    <string name="title_activity_add_task">AddTaskActivity</string>
-    <string name="title_activity_edit_task">EditTaskActivity</string>
-    <string name="title_activity_daily_list">DailyList</string>
+    <string name="progress__loading">ロード中&#8230;</string>
+    <string name="progress__processing">処理中&#8230;</string>
+    <string name="progress__creating">作成中&#8230;</string>
+    <string name="progress__updating">更新中&#8230;</string>
+    <string name="progress__deleting">削除中&#8230;</string>
+    <string name="form_filed__id">●ID</string>
+    <string name="form_field__id_annotation">※登録後に変更できません。</string>
+    <string name="form_field__email">●メールアドレス</string>
+    <string name="form_filed__password">●パスワード</string>
+    <string name="form_field__forgot_password">→パスワードを忘れた方はこちら</string>
+    <string name="form_field__nickname">●ニックネーム</string>
+    <string name="form_field__nickname_annotation">※登録後に変更できません。</string>
+    <string name="message_error__wrong_input">入力された内容に誤りがあります。</string>
+    <string name="message_error__invalid_password">パスワードが不正です。</string>
+    <string name="message_error__duplicated_id">IDまたはメールアドレスが重複しています。</string>
+    <string name="message_error__authentication_failure">認証に失敗しました。</string>
+    <string name="message_error__unexpected_error">予期せぬエラーが発生しました。\nしばらく経ってから再度アクセスしてください。</string>
+    <string name="message_error__empty_task_title">タスクを入力してください。</string>
+    <string name="message_success__created">作成しました</string>
+    <string name="message_success__updated">更新しました</string>
+    <string name="message_success__deleted">削除しました</string>
+    <string name="message_success__signed_up">サインアップしました</string>
+    <string name="message_success__logged_in">ログインしました</string>
+    <string name="message_success__cancelled">キャンセルされました</string>
+
+    <!-- AccountSettingActivity -->
+    <string name="account_setting__title">戻る</string>
+    <string name="account_setting__save_confirm_title">ご確認</string>
+    <string name="account_setting__save_confirm_message">メールアドレスを変更する場合はご案内メールのためのメールが送信されます。</string>
+    <string name="account_setting__email_not_yet_verified">未確認のため現在変更できません</string>
+    <string name="account_setting__ok_button">OK</string>
+
+    <!-- AddTaskActivity -->
+    <string name="add_task__save_button">保存</string>
+    <string name="add_task__cancel_button">キャンセル</string>
+    <string name="add_task__title_placeholder">タスクを入力</string>
+    <string name="add_task__memo_placeholder">メモを入力</string>
+    <string name="add_task__save_confirm_title">ご確認</string>
+    <string name="add_task__save_confirm_message">タイトルがありません</string>
+
+    <!-- BaseActivity -->
+    <string name="base__ok_button">OK</string>
+
+    <!-- DateTimePickerDialog -->
+    <string name="datetime_picker__title">Select Date &amp; Time</string>
+    <string name="datetime_picker__select_button">設定する</string>
+    <string name="datetime_picker__cancel_button">キャンセル</string>
+
+    <!-- EditTaskActivity -->
+    <string name="edit_task__default_date">Wed. November 26, 2014 8:34PM</string>
+    <string name="edit_task__title_placeholder">タスクを入力</string>
+    <string name="edit_task__memo_placeholder">メモを入力</string>
+    <string name="edit_task__save_button">保存</string>
+    <string name="edit_task__cancel_button">キャンセル</string>
+
+    <!-- ErrorActivity -->
+    <string name="error__abort_button">アプリを終了する</string>
+
+    <!-- LoginActivity -->
+    <string name="login__login_button">ログイン</string>
+    <string name="login__default_login_id"></string>
+    <string name="login__default_password"></string>
+
+    <!-- SettingsActivity -->
+    <string name="settings__title">戻る</string>
+    <string name="settings__account">アカウント</string>
+
+    <!-- SignUpActivity -->
+    <string name="signup__signup_confirm_title">ご確認</string>
+    <string name="signup__signup_confirm_message">ご案内のためのメールが送信されました。ご確認ください。</string>
+    <string name="signup__signup_button">登録</string>
+
+    <!-- SplashActivity -->
+
+    <!-- TaskListActivity -->
+    <string name="task_list__no_data">現在タスクは登録されていません。</string>
+    <string name="task_list__search_bar_placeholder">タスクを入力</string>
+    <string name="task_list__group_today">今日</string>
+    <string name="task_list__group_tomorrow">明日</string>
+    <string name="task_list__group_day_after_tomorrow">明後日</string>
+    <string name="task_list__group_near_future">近日中</string>
+    <string name="task_list__group_someday">いつか</string>
+    <string name="task_list__group_past">過去</string>
+    <string name="task_list__weekday_sunday">日曜日</string>
+    <string name="task_list__weekday_monday">月曜日</string>
+    <string name="task_list__weekday_tuesday">火曜日</string>
+    <string name="task_list__weekday_wednesday">水曜日</string>
+    <string name="task_list__weekday_thursday">木曜日</string>
+    <string name="task_list__weekday_friday">金曜日</string>
+    <string name="task_list__weekday_saturday">土曜日</string>
+    <string name="task_list__weekday_unknown">(不明)</string>
+    <string name="task_list__delete_confirm_title">ご確認</string>
+    <string name="task_list__delete_confirm_message">削除しますか？</string>
+    <string name="task_list__delete_confirm_negative_button">削除</string>
+    <string name="task_list__delete_confirm_positive_button">キャンセル</string>
+
+    <!-- TopActivity -->
+    <string name="top__login_button">ログイン</string>
+    <string name="top__signup_button">新規登録</string>
+    <string name="top__facebook_login_button">Facebookログイン</string>
+    <string name="top__twitter_login_button">Twitterログイン</string>
 
 </resources>

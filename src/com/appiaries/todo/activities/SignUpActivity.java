@@ -1,265 +1,143 @@
+//
+// Copyright (c) 2014 Appiaries Corporation. All rights reserved.
+//
 package com.appiaries.todo.activities;
 
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import com.appiaries.APISResult;
+import com.appiaries.baas.sdk.AB;
+import com.appiaries.baas.sdk.ABException;
+import com.appiaries.baas.sdk.ABResult;
+import com.appiaries.baas.sdk.ABStatus;
+import com.appiaries.baas.sdk.ResultCallback;
 import com.appiaries.todo.R;
-import com.appiaries.todo.managers.UserManager;
+import com.appiaries.todo.common.Constants;
+import com.appiaries.todo.common.Validator;
+import com.appiaries.todo.models.User;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-/**
- * 
- * @author ntduc
- * 
- */
 @SuppressWarnings("unchecked")
 public class SignUpActivity extends BaseActivity {
-	PlanetHolder planetHolder;
-	ProgressDialog progressBar;
+
+    private static class ViewHolder {
+        public TextView errorMessages;
+        public EditText loginId;
+        public EditText password;
+        public EditText email;
+        public Button signUpButton;
+    }
+
+    ViewHolder mViewHolder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_sign_up);
-		CreateView();
+
+		setupView();
 	}
 
-	private void CreateView() {
+	private void setupView() {
+        setContentView(R.layout.activity_signup);
 
-		planetHolder = new PlanetHolder();
+		mViewHolder = new ViewHolder();
+		mViewHolder.errorMessages = (TextView) findViewById(R.id.text_error_messages);
+		mViewHolder.email         = (EditText) findViewById(R.id.edit_email);
+		mViewHolder.loginId       = (EditText) findViewById(R.id.edit_login_id);
+		mViewHolder.password      = (EditText) findViewById(R.id.edit_password);
+		mViewHolder.signUpButton  = (Button) findViewById(R.id.button_signup);
+		mViewHolder.signUpButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
 
-		EditText txtId = (EditText) findViewById(R.id.txtIdAccount);
-		EditText txtPassword = (EditText) findViewById(R.id.txtPassword);
-		EditText txtEmailAddress = (EditText) findViewById(R.id.txtEmailAddress);
-		TextView txtValidation = (TextView) findViewById(R.id.validation);
+                if (validate(mViewHolder)) {
 
-		Button btnOk = (Button) findViewById(R.id.btnOk);
+                    User user = new User();
+                    user.setLoginId(mViewHolder.loginId.getText().toString());
+                    user.setPassword(mViewHolder.password.getText().toString());
+                    user.setEmail(mViewHolder.email.getText().toString());
 
-		planetHolder.txtValidation = txtValidation;
-		planetHolder.txtEmailAddress = txtEmailAddress;
-		planetHolder.txtId = txtId;
-		planetHolder.txtPassword = txtPassword;
-		planetHolder.btnOk = btnOk;
-
-		planetHolder.btnOk.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-
-				if (validationFrom(planetHolder)) {
-					String strLoginId = planetHolder.txtId.getText().toString();
-					String strPassword = planetHolder.txtPassword.getText()
-							.toString();
-					String strEmail = planetHolder.txtEmailAddress.getText()
-							.toString();
-
-					HashMap<String, String> data = new HashMap<String, String>();
-					data.put("loginId", strLoginId);
-					data.put("password", strPassword);
-					data.put("email", strEmail);
-
-					DoRegisterAsyncTask task = new DoRegisterAsyncTask();
-					task.execute(data);
-				} else {
-					planetHolder.txtValidation.setText(R.string.mesError);
-					planetHolder.txtValidation.setVisibility(View.VISIBLE);
-				}
-
-			}
-		});
-
+                    final ProgressDialog progress = createAndShowProgressDialog(R.string.progress__processing);
+                    user.signUp(new ResultCallback<User>() {
+                        @Override
+                        public void done(ABResult<User> result, ABException e) {
+                            progress.dismiss();
+                            if (e == null) {
+                                if (result.getCode() == ABStatus.CREATED) {
+                                    createAndShowConfirmationDialog(
+                                            R.string.signup__signup_confirm_title,
+                                            R.string.signup__signup_confirm_message,
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            }
+                                    );
+                                }
+                            } else {
+                                if (e.getCode() == ABStatus.CONFLICT) {
+                                    mViewHolder.errorMessages.setText(R.string.message_error__duplicated_id);
+                                    mViewHolder.errorMessages.setVisibility(View.VISIBLE);
+                                } else {
+                                    mViewHolder.errorMessages.setText(R.string.message_error__wrong_input);
+                                    mViewHolder.errorMessages.setVisibility(View.VISIBLE);
+                                }
+                                showError(SignUpActivity.this, e);
+                            }
+                        }
+                    }, AB.UserSignUpOption.LOGIN_AUTOMATICALLY);
+                }
+            }
+        });
 	}
 
-	/**
-	 * validation From
-	 * 
-	 * @param planetHolder
-	 */
-	private Boolean validationFrom(final PlanetHolder planetHolder) {
-
-		Boolean flg = true;
-
-		final String txtId = planetHolder.txtId.getText().toString();
-		if (!isNullOrEmpty(txtId) || txtId.trim().length() < 3
-				|| txtId.trim().length() > 20) {
-			planetHolder.txtId
-					.setBackgroundResource(R.drawable.focus_border_style);
-			flg = false;
+	private boolean validate(final ViewHolder viewHolder) {
+		boolean isValid = true;
+		int errorMessage = R.string.message_error__wrong_input;
+        //>> Login ID
+		String loginId = viewHolder.loginId.getText().toString();
+		if (TextUtils.isEmpty(loginId) || loginId.trim().length() < Constants.ID_MIN_LENGTH || loginId.trim().length() > Constants.ID_MAX_LENGTH) {
+			viewHolder.loginId.setBackgroundResource(R.drawable.focus_border_style);
+			isValid = false;
 		} else {
-			planetHolder.txtId
-					.setBackgroundResource(R.drawable.edit_text_border_style);
+			viewHolder.loginId.setBackgroundResource(R.drawable.edit_text_border_style);
 		}
-
-		final String pass = planetHolder.txtPassword.getText().toString();
-		if (!isNullOrEmpty(pass) || pass.trim().length() < 6) {
-			planetHolder.txtPassword
-					.setBackgroundResource(R.drawable.focus_border_style);
-			flg = false;
+        //>> Password
+		String password = viewHolder.password.getText().toString();
+		if (TextUtils.isEmpty(password)) {
+			viewHolder.password.setBackgroundResource(R.drawable.focus_border_style);
+			isValid = false;
+		} else if (password.trim().length() < Constants.PASSWORD_MIN_LENGTH || password.trim().length() > Constants.PASSWORD_MAX_LENGTH) {
+			viewHolder.password.setBackgroundResource(R.drawable.focus_border_style);
+			errorMessage = R.string.message_error__invalid_password;
+			isValid = false;
 		} else {
-			planetHolder.txtPassword
-					.setBackgroundResource(R.drawable.edit_text_border_style);
+			viewHolder.password.setBackgroundResource(R.drawable.edit_text_border_style);
 		}
-
-		final String emailAddress = planetHolder.txtEmailAddress.getText()
-				.toString();
-		if (!isValidEmail(emailAddress)) {
-			planetHolder.txtEmailAddress
-					.setBackgroundResource(R.drawable.focus_border_style);
-			flg = false;
+        //>> Email
+		String email = viewHolder.email.getText().toString();
+		if (!Validator.isValidEmail(email)) {
+			viewHolder.email.setBackgroundResource(R.drawable.focus_border_style);
+			isValid = false;
 		} else {
-			planetHolder.txtEmailAddress
-					.setBackgroundResource(R.drawable.edit_text_border_style);
+			viewHolder.email.setBackgroundResource(R.drawable.edit_text_border_style);
 		}
 
-		return flg;
-	}
-
-	/**
-	 * validating emails id
-	 * 
-	 * @param email
-	 * @return
-	 */
-	private boolean isValidEmail(String email) {
-		String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-		Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-		Matcher matcher = pattern.matcher(email);
-		return matcher.matches();
-	}
-
-	/**
-	 * validating password and user id not null
-	 * 
-	 * @param val
-	 * @return false with val null else true
-	 */
-	private boolean isValidPassword(String val) {
-		if (val != null && val.trim().length() > 0) {
-			return true;
+		if (!isValid) {
+			viewHolder.errorMessages.setText(errorMessage);
+			viewHolder.errorMessages.setVisibility(View.VISIBLE);
 		}
-		return false;
+		return isValid;
 	}
 
-	private boolean isNullOrEmpty(String val) {
-		if (val != null && val.trim().length() > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	/* *********************************
-	 * We use the holder pattern It makes the view faster and avoid finding the
-	 * component *********************************
-	 */
-	private static class PlanetHolder {
-
-		public TextView txtValidation;
-		public EditText txtId;
-		public EditText txtPassword;
-		public EditText txtEmailAddress;
-		public Button btnOk;
-	}
-
-	private class DoRegisterAsyncTask extends
-			AsyncTask<HashMap<String, String>, Void, APISResult> {
-
-		@SuppressWarnings("unused")
-		@Override
-		protected APISResult doInBackground(HashMap<String, String>... params) {
-			try {
-
-				HashMap<String, String> data = params[0];
-				String strLoginId = data.get("loginId");
-				String strPassword = data.get("password");
-				String strEmail = data.get("email");
-
-				HashMap<String, Object> dataObj = new HashMap<String, Object>();
-				dataObj.put("auto_login", "true");
-				return UserManager.getInstance().registerUser(strLoginId,
-						strPassword, strEmail, dataObj);
-
-			} catch (Exception ex) {
-
-				ex.printStackTrace();
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(APISResult responseObject) {
-			super.onPostExecute(responseObject);
-			progressBar.dismiss();
-			if (responseObject != null
-					&& responseObject.getResponseCode() == 201) {
-				// TO when the do login successful
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						SignUpActivity.this);
-
-				// customize and set title and message content
-				TextView customTitle = new TextView(SignUpActivity.this);
-
-				customTitle.setText("ã�”ç¢ºèª�");
-				customTitle.setPadding(10, 10, 10, 10);
-				customTitle.setGravity(Gravity.CENTER);
-				customTitle.setTextSize(20);
-
-				builder.setCustomTitle(customTitle);
-
-				TextView customMessage = new TextView(SignUpActivity.this);
-
-				customMessage.setPadding(10, 40, 10, 40);
-				customMessage.setText("ã�”æ¡ˆå†…ã�®ã�Ÿã‚�ã�®ãƒ¡ãƒ¼ãƒ«ã�Œé€�ä¿¡ã�•ã‚Œã�¾ã�—ã�Ÿã€‚ã�”ç¢ºèª�ä¸‹ã�•ã�„ã€‚");
-				customMessage.setGravity(Gravity.CENTER_HORIZONTAL);
-				customMessage.setTextSize(20);
-
-				builder.setView(customMessage);
-
-				// handle cancel button click
-				builder.setNegativeButton("OK",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Intent myIntent = new Intent(
-										SignUpActivity.this,
-										LoginActivity.class);
-								startActivity(myIntent);
-								finish();
-							}
-						});
-
-				builder.show();
-			} else {
-				planetHolder.txtValidation.setText(R.string.mesError);
-				planetHolder.txtValidation.setVisibility(View.VISIBLE);
-			}
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			progressBar = new ProgressDialog(SignUpActivity.this);
-			progressBar.setMessage("Loading....");
-			progressBar.setCancelable(false);
-			progressBar.setCanceledOnTouchOutside(false);
-			progressBar.show();
-		}
-
-	}
 }

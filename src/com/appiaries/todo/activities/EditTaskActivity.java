@@ -1,192 +1,164 @@
+//
+// Copyright (c) 2014 Appiaries Corporation. All rights reserved.
+//
 package com.appiaries.todo.activities;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Locale;
 
+import com.appiaries.baas.sdk.ABException;
+import com.appiaries.baas.sdk.ABResult;
+import com.appiaries.baas.sdk.ABStatus;
+import com.appiaries.baas.sdk.ResultCallback;
 import com.appiaries.todo.R;
 import com.appiaries.todo.activities.DateTimePickerDialog.DateTimePickerListener;
-import com.appiaries.todo.common.TextHelper;
-import com.appiaries.todo.jsonmodels.Task;
-import com.appiaries.todo.managers.TaskManager;
+import com.appiaries.todo.common.Constants;
+import com.appiaries.todo.models.Task;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class EditTaskActivity extends BaseActivity {
 
-	String screenTag = "EditTaskActivity";
-	private Date selectedDate;
-	Task task;
-	ProgressDialog progressBar;
+	private Date mSelectedDate;
+	Task mTask;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_edit_task);
 
-		Bundle bundle = getIntent().getExtras();
-		task = (Task) bundle.getSerializable("task");
-
-		final TextView tvDateTime = (TextView) findViewById(R.id.tvDateTime);
-		final EditText edtTaskTitle = (EditText) findViewById(R.id.txtTaskTitle);
-		final EditText edtMemo = (EditText) findViewById(R.id.txtMemo);
-		final Button btnDateTime = (Button) findViewById(R.id.btnChooseDate);
-		final Button btnSave = (Button) findViewById(R.id.btnSave);
-		final Button btnCancel = (Button) findViewById(R.id.btnCancel);
-		Date date = task.getScheduledAt();
-		String strScheduledAt = date.toString();
-
-		tvDateTime.setText(strScheduledAt);
-		edtTaskTitle.setText(task.getTitle());
-		edtMemo.setText(task.getText());
-
-		edtTaskTitle.setClickable(false);
-		edtTaskTitle.setFocusable(false);
-		edtTaskTitle.setFocusableInTouchMode(false);
-
-		edtTaskTitle.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Log.d(screenTag, "task title on clicked");
-				edtTaskTitle.setClickable(true);
-				edtTaskTitle.setFocusable(true);
-				edtTaskTitle.setFocusableInTouchMode(true);
-			}
-		});
-
-		edtMemo.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				edtMemo.setCursorVisible(true);
-				edtMemo.setFocusable(true);
-				edtMemo.setFocusableInTouchMode(true);
-			}
-		});
-
-		btnDateTime.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				final DateTimePickerDialog dialog = new DateTimePickerDialog(
-						EditTaskActivity.this);
-				dialog.setDateTimePickerListener(new DateTimePickerListener() {
-
-					@Override
-					public void onSet(Date date) {
-						selectedDate = date;
-						tvDateTime.setText(TextHelper
-								.getFormatedDateString(date));
-					}
-
-					@Override
-					public void onCancel() {
-
-					}
-				});
-
-				dialog.show();
-			}
-		});
-
-		btnSave.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.d(screenTag, "btn save clicked");
-				String title = "";
-				String memo = "";
-
-				long date = 0;
-				if (selectedDate != null) {
-					date = selectedDate.getTime();
-				}
-
-				if (edtTaskTitle.getText() != null) {
-					title = edtTaskTitle.getText().toString();
-				}
-
-				if (edtMemo.getText() != null) {
-					memo = edtMemo.getText().toString();
-				}
-
-				HashMap<String, Object> data = new HashMap<String, Object>();
-				if (!title.equals("")) {
-					data.put("title", title);
-				}
-
-				if (!memo.equals("")) {
-					data.put("body", memo);
-				}
-
-				if (date != 0) {
-					data.put("scheduled_at", date);
-				}
-
-				if (data != null) {
-					new UpdateTaskAsynTask().execute(data);
-				}
-
-			}
-		});
-
-		btnCancel.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
+        setupView();
 	}
 
-	private class UpdateTaskAsynTask extends
-			AsyncTask<HashMap<String, Object>, Void, Integer> {
+    private void setupView() {
+        setContentView(R.layout.activity_edit_task);
 
-		@Override
-		protected Integer doInBackground(HashMap<String, Object>... params) {
+        Bundle bundle = getIntent().getExtras();
+        mTask = (Task) bundle.getSerializable(Constants.EXTRA_KEY_TASK);
 
-			HashMap<String, Object> data = params[0];
+        final TextView textDatetime = (TextView) findViewById(R.id.text_datetime);
+        final EditText editTitle    = (EditText) findViewById(R.id.edit_task_title);
+        final EditText editMemo     = (EditText) findViewById(R.id.edit_memo);
+        final Button dtPickerButton = (Button)   findViewById(R.id.button_datetime);
+        final Button saveButton     = (Button)   findViewById(R.id.button_save);
+        final Button cancelButton   = (Button)   findViewById(R.id.button_cancel);
 
-			try {
-				return TaskManager.getInstance().updateTask(task.getId(), data);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			return null;
-		}
+        Date date = mTask.getScheduledAt();
+        String scheduledAt = date.toString();
+        textDatetime.setText(scheduledAt);
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			progressBar = new ProgressDialog(EditTaskActivity.this);
-			progressBar.setMessage("Loading....");
-			progressBar.setCancelable(false);
-			progressBar.setCanceledOnTouchOutside(false);
-			progressBar.show();
-		}
+        editTitle.setText(mTask.getTitle());
+        editMemo.setText(mTask.getBody());
+        editMemo.setSelection(editMemo.getText().length());
 
-		@Override
-		protected void onPostExecute(Integer result) {
-			super.onPostExecute(result);
-			progressBar.dismiss();
-			if (result == 204) {
-				Log.d(screenTag, "update successful");
-				Intent resultIntent = new Intent();
-				setResult(1, resultIntent);
-				finish();
-			} else {
-				Log.d(screenTag, "update fail");
-			}
+        // Date & Time Picker Button
+        dtPickerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final DateTimePickerDialog dialog = new DateTimePickerDialog(EditTaskActivity.this);
+                dialog.setDateTimePickerListener(new DateTimePickerListener() {
+                    @Override
+                    public void onSet(Date date) {
+                        mSelectedDate = date;
+                        textDatetime.setText(new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT, Locale.getDefault()).format(date));
+                    }
+                    @Override
+                    public void onCancel() {
+                        /* NOP */
+                    }
+                });
+                dialog.show();
+            }
+        });
 
-		}
+        // Save Button
+        saveButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-	}
+                // hide software keyboard if needed
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (editTitle.hasFocus()) {
+                    imm.hideSoftInputFromWindow(editTitle.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                } else if (editMemo.hasFocus()) {
+                    imm.hideSoftInputFromWindow(editMemo.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                }
+
+                // move focus
+                LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+                layout.setFocusableInTouchMode(true);
+                layout.requestFocus();
+                layout.setFocusableInTouchMode(false);
+
+
+                Task task;
+                try {
+                    task = (Task) mTask.clone();
+                } catch (CloneNotSupportedException e) {
+                    showError(EditTaskActivity.this, new ABException(e));
+                    finish();
+                    return;
+                }
+
+                String title = editTitle.getText() != null ? editTitle.getText().toString() : null;
+                String memo  = editMemo.getText()  != null ? editMemo.getText().toString()  : null;
+                Date scheduleAt = mSelectedDate != null ? mSelectedDate : null;
+
+                if (scheduleAt != null && scheduleAt.getTime() != task.getScheduledAt().getTime()) {
+                    task.setScheduleAt(scheduleAt);
+                }
+                if (title != null && !title.equals(task.getTitle())) {
+                    task.setTitle(title);
+                }
+                if (memo != null && !memo.equals(task.getBody())) {
+                    task.setBody(memo);
+                }
+
+                if (!task.isDirty()) {
+                    finish();
+                    return;
+                }
+
+                final ProgressDialog progress = createAndShowProgressDialog(R.string.progress__updating);
+                task.save(new ResultCallback<Task>() {
+                    @Override
+                    public void done(ABResult<Task> result, ABException e) {
+                        progress.dismiss();
+                        if (e == null) {
+                            int code = result.getCode();
+                            if (code == ABStatus.OK) {
+                                showMessage(EditTaskActivity.this, R.string.message_success__updated);
+                                Intent intent = new Intent();
+                                setResult(TaskListActivity.RESULT_CODE_SUCCESS, intent);
+                                finish();
+                            } else {
+                                showUnexpectedStatusCodeError(EditTaskActivity.this, code);
+                            }
+                        } else {
+                            showError(EditTaskActivity.this, e);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Cancel Button
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
 }

@@ -6,56 +6,56 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/groupNormal"
+        android:id="@+id/group_normal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.6"
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/btnLoginTop"
+            android:id="@+id/button_login"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="ログイン"            
+            android:text="@string/top__login_button"
             android:background="@drawable/orange_button" />
 
         <Button
-            android:id="@+id/btnRegistTop"
+            android:id="@+id/button_signup"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:textColor="#ffffff"
-            android:text="新規登録"    
+            android:text="@string/top__signup_button"
             android:background="@drawable/darkred_button" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/groupSNS"
+        android:id="@+id/group_sns"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/btnFB"
+            android:id="@+id/button_login_facebook"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:textColor="#ffffff"
-            android:text="Facebookログイン"
+            android:text="@string/top__facebook_login_button"
             android:background="@drawable/fb_button" />
 
         <Button
-            android:id="@+id/btnTwit"
+            android:id="@+id/button_login_twitter"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
             android:textColor="#ffffff"
-            android:text="Twitterログイン"
+            android:text="@string/top__twitter_login_button"
             android:background="@drawable/twitter_button" />
 
     </LinearLayout>

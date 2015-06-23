@@ -1,9 +1,13 @@
+//
+// Copyright (c) 2014 Appiaries Corporation. All rights reserved.
+//
 package com.appiaries.todo.activities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import com.appiaries.todo.R;
 
@@ -17,16 +21,15 @@ import android.widget.TimePicker;
 
 public class DateTimePickerDialog extends Dialog {
 
-	private DateTimePickerListener dateTimePickerListener;
-	private TimePicker timePicker;
-	private DatePicker datePicker;
-	private Date defaultDate;
-	
-	public DateTimePickerDialog(Context context, Date defaultDate) {
-		super(context);
-		this.defaultDate = defaultDate;
-	}
-	
+    public interface DateTimePickerListener {
+        public void onSet(Date date);
+        public void onCancel();
+    }
+
+    private DateTimePickerListener mDateTimePickerListener;
+	private TimePicker mTimePicker;
+	private DatePicker mDatePicker;
+
 	public DateTimePickerDialog(Context context) {
 		super(context);
 	}
@@ -34,95 +37,60 @@ public class DateTimePickerDialog extends Dialog {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.datepicker_view);		
 
-		timePicker = (TimePicker) findViewById(R.id.timePicker);
-		datePicker = (DatePicker) findViewById(R.id.datePicker);
-
-		Button btnSet = (Button) findViewById(R.id.btnSet);
-		btnSet.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {								
-				dateTimePickerListener.onSet(getSelectedDate());
-				dismiss();
-			}
-		});
-
-		Button btnCancel = (Button) findViewById(R.id.btnCancel);
-		btnCancel.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dateTimePickerListener.onCancel();
-				dismiss();
-			}
-		});
-		
-		setTitle("Select Date & Time");
-		
-		Calendar cal = Calendar.getInstance();
-		
-		datePicker.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-		
+        setupView();
 	}
-	
-	private Date getSelectedDate()
-	{
+
+    public void setDateTimePickerListener(DateTimePickerListener listener) {
+        this.mDateTimePickerListener = listener;
+    }
+
+    private void setupView() {
+        setContentView(R.layout.datepicker_view);
+
+        mTimePicker = (TimePicker) findViewById(R.id.picker_time);
+        mDatePicker = (DatePicker) findViewById(R.id.picker_date);
+
+        Button selectButton = (Button) findViewById(R.id.button_select);
+        selectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDateTimePickerListener.onSet(getSelectedDate());
+                dismiss();
+            }
+        });
+
+        Button cancelButton = (Button) findViewById(R.id.button_cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDateTimePickerListener.onCancel();
+                dismiss();
+            }
+        });
+
+        setTitle(R.string.datetime_picker__title);
+
+        Calendar cal = Calendar.getInstance();
+        mDatePicker.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+    }
+
+	private Date getSelectedDate() {
 		String dateString = String.format("%s/%02d/%02d %02d:%02d",
-				datePicker.getYear(), 
-				datePicker.getMonth() + 1,
-				datePicker.getDayOfMonth(), 
-				timePicker.getCurrentHour(),
-				timePicker.getCurrentMinute());
+                mDatePicker.getYear(),
+                mDatePicker.getMonth() + 1,
+                mDatePicker.getDayOfMonth(),
+                mTimePicker.getCurrentHour(),
+                mTimePicker.getCurrentMinute());
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault());
 		
 		Date selectedDate = null;
-		
 		try {
 			selectedDate = sdf.parse(dateString);
-		} catch (ParseException e) {					
-		}
+		} catch (ParseException ignored) {}
 		
 		return selectedDate;
 	}
-		
-	// Used to convert 24hr format to 12hr format with AM/PM values
-	/*private String getTimeString(int hours, int mins) {
 
-		Log.d("24hour Time", hours + ":" + mins);
-
-		String timeSet = "";
-		if (hours > 12) {
-			hours -= 12;
-			timeSet = "PM";
-		} else if (hours == 0) {
-			hours += 12;
-			timeSet = "AM";
-		} else if (hours == 12)
-			timeSet = "PM";
-		else
-			timeSet = "AM";
-
-		String minutes = "";
-		if (mins < 10)
-			minutes = "0" + mins;
-		else
-			minutes = String.valueOf(mins);
-
-		// Append in a StringBuilder
-		String aTime = new StringBuilder().append(hours).append(':')
-				.append(minutes).append(" ").append(timeSet).toString();
-
-		return aTime;
-	}*/
-
-	public void setDateTimePickerListener(DateTimePickerListener listener) {
-		this.dateTimePickerListener = listener;
-	}
-
-	public interface DateTimePickerListener {
-		public void onSet(Date date);
-
-		public void onCancel();
-	}
 }

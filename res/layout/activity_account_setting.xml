@@ -9,20 +9,20 @@
         android:layout_marginTop="10dp" >
 
         <TextView
-            android:id="@+id/txtAccountValidation"
-            style="@style/ErrorLableStyle"
+            android:id="@+id/text_error_messages"
+            style="@style/ErrorLabelStyle"
             android:layout_marginBottom="10dp"
-            android:text="@string/mesError"
+            android:text="@string/message_error__wrong_input"
             android:visibility="gone" />
 
         <TextView
-            style="@style/SettingLableStyle"
-            android:text="@string/txtId"
+            style="@style/SettingLabelStyle"
+            android:text="@string/form_filed__id"
             android:textSize="8pt" />
 
         <TextView
-            android:id="@+id/tvId"
-            style="@style/SettingLableStyle"
+            android:id="@+id/edit_login_id"
+            style="@style/SettingLabelStyle"
             android:layout_width="270dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="30dp"
@@ -31,15 +31,16 @@
             android:textSize="15sp" />
 
         <TextView
-            style="@style/SettingLableStyle"
+            style="@style/SettingLabelStyle"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="@string/txtEmailAddress"
+            android:text="@string/form_field__email"
             android:textSize="8pt" />
 
         <EditText
-            android:id="@+id/txtEmailAccount"
-            style="@style/HomeTxtDescStyle"
+            android:id="@+id/edit_email"
+            style="@style/HomeTextDescriptionStyle"
+            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="start|center_horizontal"
@@ -49,15 +50,15 @@
     </LinearLayout>
 
     <TextView
-        style="@style/SettingLableStyle"
+        style="@style/SettingLabelStyle"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="@string/txtPassword"
+        android:text="@string/form_filed__password"
         android:textSize="8pt" />
 
     <EditText
-        android:id="@+id/txtPasswordAccount"
-        style="@style/HomeTxtDescStyle"
+        android:id="@+id/text_password"
+        style="@style/HomeTextDescriptionStyle"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_weight="1"
@@ -69,11 +70,11 @@
         android:password="true" />
 
     <Button
-        android:id="@+id/btnChangeAccount"
+        android:id="@+id/button_save"
         style="@style/ButtonStyle"
         android:layout_marginTop="10dp"
         android:background="@drawable/red_button"
-        android:text="OK" />
+        android:text="@string/account_setting__ok_button" />
 
     <LinearLayout
         style="@style/LayoutVerticalStyle"

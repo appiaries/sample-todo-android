@@ -9,54 +9,56 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/validation"
-            style="@style/ErrorLableStyle"
+            android:id="@+id/text_error_messages"
+            style="@style/ErrorLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:visibility="gone" />
 
         <TextView
-            style="@style/SettingLableStyle"
+            style="@style/SettingLabelStyle"
             android:layout_margin="10dp"
             android:layout_marginLeft="0dp"
-            android:text="@string/txtId" />
+            android:text="@string/form_filed__id" />
 
         <TextView
-            style="@style/SettingLableStyle"
+            style="@style/SettingLabelStyle"
             android:layout_marginBottom="10dp"
-            android:text="@string/mesDecsUseID" />
+            android:text="@string/form_field__id_annotation" />
 
         <EditText
-            android:id="@+id/txtIdAccount"
-            style="@style/HomeTxtDescStyle"
+            android:id="@+id/edit_login_id"
+            style="@style/HomeTextDescriptionStyle"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@drawable/edit_text_border_style"
             android:paddingLeft="5dp" />
 
         <TextView
-            style="@style/SettingLableStyle"
+            style="@style/SettingLabelStyle"
             android:layout_margin="10dp"
-            android:text="@string/txtPassword" />
+            android:text="@string/form_filed__password" />
 
         <EditText
-            android:id="@+id/txtPassword"
-            style="@style/HomeTxtDescStyle"
+            android:id="@+id/edit_password"
+            style="@style/HomeTextDescriptionStyle"
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:background="@drawable/edit_text_border_style"            
+            android:background="@drawable/edit_text_border_style"
+            android:inputType="textPassword"
             android:paddingLeft="5dp" />
 
     </LinearLayout>
 
     <TextView
-        style="@style/SettingLableStyle"
-        android:text="@string/txtEmailAddress" />
+        style="@style/SettingLabelStyle"
+        android:text="@string/form_field__email" />
 
     <EditText
-        android:id="@+id/txtEmailAddress"
-        style="@style/HomeTxtDescStyle"
+        android:id="@+id/edit_email"
+        style="@style/HomeTextDescriptionStyle"
+        android:inputType="textEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_weight="1"
@@ -72,10 +74,10 @@
         android:gravity="center_horizontal" >
 
         <Button
-            android:id="@+id/btnOk"
+            android:id="@+id/button_signup"
             style="@style/ButtonStyle"            
             android:background="@drawable/my_button"
-            android:text="@string/btnOk" />
+            android:text="@string/signup__signup_button" />
     </LinearLayout>
 
 </LinearLayout>
